@@ -1,5 +1,9 @@
 from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget,QScrollArea
 from PyQt6.QtCore import Qt
+from PyQt6.QtGui import QFont
+
+font = QFont("monospace")
+
 import sys
 import json
 class trie():
@@ -100,8 +104,7 @@ class MainWindow(QMainWindow):
             for language in ["en-US","ja-JP","zh-CN","zh-TW","ko-KR"]:
                 if language+"_name" in id_to_all[key].keys():
                     self.trie.insert(id_to_all[key][language+"_name"],id_to_all[key]["rarity"],id_to_all[key]["deck_used"])
-        self.setFixedWidth(200)
-        self.setFixedHeight(400)
+
         self.setWindowTitle("dismantle Assistant")
         self.label = ScrollLabel()
         self.input = QLineEdit()
@@ -131,7 +134,10 @@ class MainWindow(QMainWindow):
 
 
 app = QApplication(sys.argv)
+QApplication.setFont(QFont('Arial', 10), "QLabel")
+
 window = MainWindow()
+window.resize(300,400)
 window.show()
 
 app.exec()
