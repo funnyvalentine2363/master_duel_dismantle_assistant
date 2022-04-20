@@ -146,6 +146,7 @@ app = QApplication(sys.argv)
 QApplication.setFont(QFont('Arial', 10), "QTextEdit")
 
 window = MainWindow()
+window.resize(400,600)
 window.show()
 
 app.exec()
