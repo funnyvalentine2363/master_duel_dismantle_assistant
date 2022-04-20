@@ -1,9 +1,7 @@
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget,QScrollArea,QTextEdit
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLineEdit, QVBoxLayout, QWidget,QScrollArea,QTextEdit
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
-import pandas as pd
 
-font = QFont("monospace")
 
 import sys
 import json
@@ -94,7 +92,6 @@ class ScrollLabel(QScrollArea):
 
 
 
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -122,7 +119,6 @@ class MainWindow(QMainWindow):
 
     def text_changed(self):
         name,rarity,decks,deck_info = self.trie.search(self.input.text())
-        print(name,rarity,decks,deck_info)
         if name is None:
             return
         if rarity is None:
@@ -130,17 +126,37 @@ class MainWindow(QMainWindow):
         #"3×": [], "2×": [], "1×": [], "0×:[]"
         prefix = {"卡名: "+name:{},
                   "稀有度: "+rarity:{}}
-
         if not decks:
             prefix["携带此卡的卡组: 无"] = {}
         else:
             for deck in decks:
                 if deck_info and deck in deck_info.keys():
-                    prefix[deck] = {"3×": deck_info[deck][0], "2×": deck_info[deck][1], "1×": deck_info[deck][2], "0×":deck_info[deck][3],"平均携带":deck_info[deck][4]}
+                    #prefix[deck] = {"3×": deck_info[deck][0], "2×": deck_info[deck][1], "1×": deck_info[deck][2], "0×":deck_info[deck][3],"平均携带":deck_info[deck][4]}
+                    prefix[deck] = deck_info[deck]
                 else:
-                    prefix[deck] = {"3×": "?", "2×": "?", "1×": "?","0×": "?", "平均携带": "?"}
+                    prefix[deck] = ['?']*5
+                    #prefix[deck] = {"3×": "?", "2×": "?", "1×": "?","0×": "?", "平均携带": "?"}
+        # import pandas as pd
+        # df = pd.DataFrame(data=prefix)
+        # df = df.fillna(' ').T
+        # print(df.to_html())
+        # print(self.to_html(prefix))
+        self.label.setText(self.to_html(prefix))
 
-        self.label.setText(pd.DataFrame(data=prefix).fillna(' ').T.to_html())
+    def to_html(self,dic):
+        html = "<thead><tr style='text-align: center;'><th></th><th>3×</th><th>2×</th><th>1×</th><th>0×</th><th>平均携带</th></tr></thead>"
+        html+="<tbody>"
+        for key in dic.keys():
+            html+="<tr>"
+            html+="<th>"+key+"</th>"
+            if dic[key]:
+                for str in dic[key]:
+                    html+="<td>"+str+"</td>"
+            else:
+                for _ in range(5):
+                    html += "<td>" + "</td>"
+        html +="</tbody>"
+        return "<table border='1'>" + html+"</table>"
 
 app = QApplication(sys.argv)
 QApplication.setFont(QFont('Arial', 10), "QTextEdit")
