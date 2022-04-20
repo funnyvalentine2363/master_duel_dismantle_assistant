@@ -1,6 +1,7 @@
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget,QScrollArea
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLabel, QLineEdit, QVBoxLayout, QWidget,QScrollArea,QTextEdit
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
+import pandas as pd
 
 font = QFont("monospace")
 
@@ -11,7 +12,7 @@ class trie():
         self.dic = {}
         self.end = False
 
-    def insert(self,s,rarity,deck):
+    def insert(self,s,rarity,deck,deck_info):
         d = self
         s = s.lower()
         for char in s:
@@ -23,10 +24,11 @@ class trie():
         d.rarity = rarity
         d.deck = deck
         d.name = s
+        d.deck_info = deck_info
 
     def search(self,s):
         if not s:
-            return None,None,None
+            return None,None,None,None
         s = s.lower()
         d = self
         i = 0
@@ -34,7 +36,7 @@ class trie():
             d = d.dic
             if i<len(s):
                 if s[i] not in d.keys():
-                    return None,None,None
+                    return None,None,None,None
                 else:
                     d = d[s[i]]
                     i+=1
@@ -44,8 +46,8 @@ class trie():
                         d = d[key]
                         break
                 else:
-                    return None,None,None
-        return d.name,d.rarity,d.deck
+                    return None,None,None,None
+        return d.name,d.rarity,d.deck,d.deck_info
 
 
 # id_to_all = json.load(open("data.json", "r"))
@@ -53,12 +55,10 @@ class trie():
 # for key in id_to_all.keys():
 #     for language in ["en-US","ja-JP","zh-CN","zh-TW","ko-KR"]:
 #         if language+"_name" in id_to_all[key].keys():
-#             t.insert(id_to_all[key][language+"_name"],id_to_all[key]["rarity"],id_to_all[key]["deck_used"])
+#             t.insert(id_to_all[key][language+"_name"],id_to_all[key]["rarity"],id_to_all[key]["deck_used"],id_to_all[key]["deck_types_info"])
 #
-#
-#
-# name,rarity,deck = t.search("a")
-# print(name,rarity,deck)
+# name,rarity,deck,deck_info = t.search("幻")
+# print(name,rarity,deck,deck_info)
 
 class ScrollLabel(QScrollArea):
 
@@ -77,13 +77,12 @@ class ScrollLabel(QScrollArea):
         lay = QVBoxLayout(content)
 
         # creating label
-        self.label = QLabel(content)
+        self.label = QTextEdit(content)
 
         # setting alignment to the text
-        self.label.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+        self.label.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
         # making label multi-line
-        self.label.setWordWrap(True)
 
         # adding label to the layout
         lay.addWidget(self.label)
@@ -95,6 +94,7 @@ class ScrollLabel(QScrollArea):
 
 
 
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -103,7 +103,7 @@ class MainWindow(QMainWindow):
         for key in id_to_all.keys():
             for language in ["en-US","ja-JP","zh-CN","zh-TW","ko-KR"]:
                 if language+"_name" in id_to_all[key].keys():
-                    self.trie.insert(id_to_all[key][language+"_name"],id_to_all[key]["rarity"],id_to_all[key]["deck_used"])
+                    self.trie.insert(id_to_all[key][language+"_name"],id_to_all[key]["rarity"],id_to_all[key]["deck_used"],id_to_all[key]["deck_types_info"])
 
         self.setWindowTitle("dismantle Assistant")
         self.label = ScrollLabel()
@@ -121,23 +121,31 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
 
     def text_changed(self):
-        name,rarity,deck = self.trie.search(self.input.text())
+        name,rarity,decks,deck_info = self.trie.search(self.input.text())
+        print(name,rarity,decks,deck_info)
         if name is None:
             return
         if rarity is None:
             rarity = "无"
-        if deck == []:
-            deck = "无"
-        else:
-            deck = '\n'.join(deck)
-        self.label.setText("卡名:"+name+'\n'+"稀有度:"+rarity+'\n'+"携带此卡的卡组:\n"+deck)
+        #"3×": [], "2×": [], "1×": [], "0×:[]"
+        prefix = {"卡名: "+name:{},
+                  "稀有度: "+rarity:{}}
 
+        if not decks:
+            prefix["携带此卡的卡组: 无"] = {}
+        else:
+            for deck in decks:
+                if deck_info and deck in deck_info.keys():
+                    prefix[deck] = {"3×": deck_info[deck][0], "2×": deck_info[deck][1], "1×": deck_info[deck][2], "0×":deck_info[deck][3],"平均携带":deck_info[deck][4]}
+                else:
+                    prefix[deck] = {"3×": "?", "2×": "?", "1×": "?","0×": "?", "平均携带": "?"}
+
+        self.label.setText(pd.DataFrame(data=prefix).fillna(' ').T.to_html())
 
 app = QApplication(sys.argv)
-QApplication.setFont(QFont('Arial', 10), "QLabel")
+QApplication.setFont(QFont('Arial', 10), "QTextEdit")
 
 window = MainWindow()
-window.resize(300,400)
 window.show()
 
 app.exec()
