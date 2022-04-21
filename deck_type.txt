@@ -1,4 +1,4 @@
-Galaxy Photon
+Galaxy Photon:银河眼
 Solfachord
 Invoked Dogmatika Shaddoll
 Dragon Link
@@ -14,7 +14,7 @@ Lyrilusc Tri-Brigade
 Despia Dogmatika Shaddoll
 The Weather
 Time Thief Raidraptor
-Despia
+Despia:死狱乡
 Lunalight Raidraptor
 Danger Dark World
 Gravekeeper's
@@ -32,28 +32,28 @@ Melffy Tri-Brigade
 Tenyi
 Synchrons
 Evil Eye
-Six Samurai
-True Draco
+Six Samurai:六武士
+True Draco:真龙
 Megalith
-Eldlich Dogmatika
+Eldlich Dogmatika:教导国
 Mekk-Knights
 Generaider
 Marincess
 Invoked Despia Shaddoll
 Amorphage
-Zoodiac
+Zoodiac:十二兽
 Orcust Mekk-Knight
 Magikey Suship
 Performage
 Zoodiac Eldlich
 Invoked Generaider
-Thunder Dragon
+Thunder Dragon:雷龙
 Lunalight Orcust
 Salamangreat Eldlich
 Invoked Dogmatika
 Live☆Twin Unchained
 Dogmatika Nekroz
-Phantom Knights
+Phantom Knights:幻影骑士
 Mekk-Knight Buster Blader
 Egyptian God
 Poker Knights
@@ -61,44 +61,44 @@ Yosenju
 Sky Striker Crusadia
 Invoked Mekk-Knights
 Tellarknight
-Speedroid
+Speedroid:疾行机人
 Harpie Dragunity
 Invoked Despia
-SPYRAL
-Dark Magician
+SPYRAL:秘旋谍
+Dark Magician:黑魔导
 Plunder Patrol
 Numeron Ra
-Eldlich
-Dogmatika
+Eldlich:黄金国
+Dogmatika:教导
 Skull Servant Eldlich
-Endymion
-Synchro Eldlich
+Endymion:恩底弥翁
+Synchro Eldlich:水百国
 Sky Striker Orcust
 True Draco Monarchs
-HEROs
-Zefra
+HEROs:英雄
+Zefra:神数
 Harpie Simorgh
 Mermail Atlantean
 Springans
 Generaider Musket
-Live☆Twin Eldlich
+Live☆Twin Eldlich:双子国
 Toon
-Kaiju
+Kaiju:坏兽
 Lunalight
-N/R Festival
-Sky Striker Eldlich
-Numeron
+N/R Festival:N/R杯
+Sky Striker Eldlich:闪刀黄金国
+Numeron:源数
 Paleo Frog
 Buster Blader
 Darklord
-Odd-Eyes
+Odd-Eyes:异色眼
 Chaos
 Invoked Cyber Dragon
-Cubic
+Cubic:方界
 Amazement
 Inferno Tempest Necroface
-@Ignister
-Sky Striker
+@Ignister:火灵天星
+Sky Striker:闪刀
 Lyrilusc
 Rikka
 Crystron
@@ -108,74 +108,74 @@ Gladiator Beast Tri-Brigade
 Armed Dragon
 Skull Servant
 Fish
-Witchcrafter
+Witchcrafter:魔女术
 Fluffal
 World Chalice
-Blue-Eyes
+Blue-Eyes:青眼白龙
 Zombies
 ABC
-Exodia
+Exodia:黑暗大法师
 Lair of Darkness
 Railway
 Numeron Generaider
 Stun
 Shark Kragen
 Graydle
-Drytron
+Drytron:龙辉巧
 Kozmo
 Superheavy Samurai
 Aroma
 Ice Barrier
-Danger!
+Danger!:未界域
 Phantasm Spiral
 D/D/D
-Adamancipator
-Zoodiac Tri-Brigade
+Adamancipator:魔救
+Zoodiac Tri-Brigade:十二铁
 Magical Musket
-Gem-Knights
+Gem-Knights:宝石骑士
 Salamangreat
 Ancient Gear
 Invoked Dogmatika Eldlich
 Mayakashi Eldlich
 Invoked Eldlich
-Phantom Knight Burning Abyss
-Pendulum Magician
+Phantom Knight Burning Abyss:彼岸幻影骑士
+Pendulum Magician:魔术师
 Dracoslayer
 Nekroz
-Dragonmaid
+Dragonmaid:龙女仆
 Melffy
-Despia Darklord
+Despia Darklord:黑天使死狱乡
 Orcust
 Banquet FTK
 Sacred Beast
-Vampire
+Vampire:吸血鬼
 Infernoble Knight
-Tri-Brigade
+Tri-Brigade:铁兽
 Gren Maju
-Earth Machine
+Earth Machine:地机
 Dragunity
 Shiranui
 Resonators
 PSY-Frame
-Eldlich Cubic
+Eldlich Cubic:方界黄金国
 Spellbook Dogmatika
 Rose Dragon
-Shaddoll
+Shaddoll:影依
 Raidraptor
-Live☆Twin
+Live☆Twin:双子
 Igknight
 Qliphort
 Fleur
 Giant Ballpark
-Yang Zing Tenyi
+Yang Zing Tenyi:天威龙星
 Crusadia
 Deskbot
-Prank-Kids
+Prank-Kids:调皮
 Invoked Shaddoll
 Madolche
 Cyber Angel
-Utopia 
-Dragonmaid Eldlich
+Utopia:霍普
+Dragonmaid Eldlich:龙女仆黄金国
 Ancient Warriors
 Myutant
 Traptrix
@@ -186,18 +186,18 @@ Thunder Dragon Orcust
 Subterror
 Dinos
 Altergeist
-Cyber Dragon
+Cyber Dragon:电子龙
 Mermail
-Unchained 
+Unchained
 Valkyrie
 Buster Blader Dragon Link
-Code Talker
+Code Talker:码语者
 Infernoid
-True Draco Eldlich
+True Draco Eldlich:真龙黄金国
 Traptrix Dogmatika
 Cardian Exodia
-Danger! Thunder Dragon
+Danger! Thunder Dragon:未界域雷龙
 Infernity
 Machina
-Virtual World
+Virtual World:电脑堺
 Mathmech

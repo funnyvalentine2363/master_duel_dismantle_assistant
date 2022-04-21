@@ -96,6 +96,14 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         id_to_all = json.load(open("data.json", "r"))
+        self.eng_to_cn_dic = {}
+        with open('deck_type.txt', 'r') as r:
+            for line in r.readlines():
+                line = line.strip().split(":")
+                if len(line) > 1:
+                    self.eng_to_cn_dic[line[0]] = line[0]+"("+line[-1]+")"
+                else:
+                    self.eng_to_cn_dic[line[0]] = line[0]
         self.trie = trie()
         for key in id_to_all.keys():
             for language in ["en-US","ja-JP","zh-CN","zh-TW","ko-KR"]:
@@ -132,9 +140,13 @@ class MainWindow(QMainWindow):
             for deck in decks:
                 if deck_info and deck in deck_info.keys():
                     #prefix[deck] = {"3×": deck_info[deck][0], "2×": deck_info[deck][1], "1×": deck_info[deck][2], "0×":deck_info[deck][3],"平均携带":deck_info[deck][4]}
-                    prefix[deck] = deck_info[deck]
+                    try:
+                        prefix[self.eng_to_cn_dic[deck.strip()]] = deck_info[deck]
+                    except:
+                        print(deck)
+                        continue
                 else:
-                    prefix[deck] = ['?']*5
+                    prefix[self.eng_to_cn_dic[deck]] = ['?']*5
                     #prefix[deck] = {"3×": "?", "2×": "?", "1×": "?","0×": "?", "平均携带": "?"}
         # import pandas as pd
         # df = pd.DataFrame(data=prefix)
@@ -159,7 +171,7 @@ class MainWindow(QMainWindow):
         return "<table border='1'>" + html+"</table>"
 
 app = QApplication(sys.argv)
-QApplication.setFont(QFont('Arial', 10), "QTextEdit")
+QApplication.setFont(QFont('微软雅黑', 10), "QTextEdit")
 
 window = MainWindow()
 window.resize(400,600)
