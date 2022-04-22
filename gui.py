@@ -9,7 +9,10 @@ class trie():
     def __init__(self):
         self.dic = {}
         self.end = False
-
+        self.rarity =None
+        self.name = None
+        self.deck = None
+        self.deck_info = None
     def insert(self,s,rarity,deck,deck_info):
         d = self
         s = s.lower()
@@ -20,9 +23,9 @@ class trie():
             d = d[char]
         d.end = True
         d.rarity = rarity
-        d.deck = deck
+        d.deck = deck if not d.deck else d.deck
         d.name = s
-        d.deck_info = deck_info
+        d.deck_info = deck_info if not d.deck_info else d.deck_info
 
     def search(self,s):
         if not s:
@@ -30,8 +33,9 @@ class trie():
         s = s.lower()
         d = self
         i = 0
-        while not d.end:
+        while not d.end or i<len(s):
             d = d.dic
+
             if i<len(s):
                 if s[i] not in d.keys():
                     return None,None,None,None
@@ -100,6 +104,7 @@ class MainWindow(QMainWindow):
         with open('deck_type.txt', 'r') as r:
             for line in r.readlines():
                 line = line.strip().split(":")
+
                 if len(line) > 1:
                     self.eng_to_cn_dic[line[0]] = line[0]+"("+line[-1]+")"
                 else:
@@ -109,7 +114,6 @@ class MainWindow(QMainWindow):
             for language in ["en-US","ja-JP","zh-CN","zh-TW","ko-KR"]:
                 if language+"_name" in id_to_all[key].keys():
                     self.trie.insert(id_to_all[key][language+"_name"],id_to_all[key]["rarity"],id_to_all[key]["deck_used"],id_to_all[key]["deck_types_info"])
-
         self.setWindowTitle("dismantle Assistant")
         self.label = ScrollLabel()
         self.input = QLineEdit()
