@@ -1,4 +1,4 @@
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLineEdit, QVBoxLayout, QWidget, QScrollArea, QTextEdit
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLineEdit, QVBoxLayout, QWidget, QScrollArea, QTextEdit, QCheckBox, QHBoxLayout
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 
@@ -74,7 +74,18 @@ class MainWindow(QMainWindow):
         self.input = QLineEdit()
         self.input.textChanged.connect(self.text_changed)
 
+        checkbox_layout = QHBoxLayout()
+        self.rarity_checkboxes = [QCheckBox(r) for r in self.rarity_order]
+        for i, cb in enumerate(self.rarity_checkboxes):
+            cb.setChecked(self.database_mask[i])
+            cb.toggled.connect(self._rarity_checkboxes_toggled)
+            checkbox_layout.addWidget(cb)
+
+        checkbox_container = QWidget()
+        checkbox_container.setLayout(checkbox_layout)
+
         layout = QVBoxLayout()
+        layout.addWidget(checkbox_container)
         layout.addWidget(self.input)
         layout.addWidget(self.label)
 
@@ -85,33 +96,29 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(container)
 
     def _create_database(self):
-        self.databaseUR = CardInfoDB()
-        self.databaseSR = CardInfoDB()
-        self.databaseN = CardInfoDB()
-        self.databaseR = CardInfoDB()
-        self.databaseList = [
-            self.databaseUR,
-            self.databaseSR,
-            self.databaseR,
-            self.databaseN,
-        ]
+        self.rarity_order = ['UR', 'SR', 'R', 'N']
+        self.rarity_id = dict(
+            zip(self.rarity_order, range(len(self.rarity_order))))
+
+        self.databaseList = [CardInfoDB()
+                             for _ in range(len(self.rarity_order))]
 
         self.database = CardInfoDBGroup(self.databaseList)
-
-        self.rarity_id = {
-            'UR': 0,
-            'SR': 1,
-            'R': 2,
-            'N': 3,
-        }
+        self.database_mask = [True, True, False, False]
 
     def _rarity2database(self, rarity: str):
         return self.databaseList[self.rarity_id[rarity]]
 
+    def _rarity_checkboxes_toggled(self):
+        for i, cb in enumerate(self.rarity_checkboxes):
+            self.database_mask[i] = cb.isChecked()
+
+        self.text_changed()
+
     def text_changed(self):
         html = ''
         results = self.database.search(
-            self.input.text(), [True, True, False, False])
+            self.input.text(), self.database_mask)
         for name, card_info in results:
             if name is None:
                 return
@@ -135,7 +142,7 @@ class MainWindow(QMainWindow):
                     deck_name = self.eng_to_cn_dic[deck_name]
 
                 if deck in card_info.deck_info:
-                    #prefix[deck] = {"3×": deck_info[deck][0], "2×": deck_info[deck][1], "1×": deck_info[deck][2], "0×":deck_info[deck][3],"平均携带":deck_info[deck][4]}
+                    # prefix[deck] = {"3×": deck_info[deck][0], "2×": deck_info[deck][1], "1×": deck_info[deck][2], "0×":deck_info[deck][3],"平均携带":deck_info[deck][4]}
                     prefix[deck_name] = card_info.deck_info[deck]
                 else:
                     prefix[deck_name] = ['?']*5
