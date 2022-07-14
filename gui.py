@@ -1,66 +1,13 @@
-from PyQt6.QtWidgets import QApplication, QMainWindow, QLineEdit, QVBoxLayout, QWidget,QScrollArea,QTextEdit
+from PyQt6.QtWidgets import QApplication, QMainWindow, QLineEdit, QVBoxLayout, QWidget, QScrollArea, QTextEdit
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QFont
 
 
 import sys
 import json
-class trie():
-    def __init__(self):
-        self.dic = {}
-        self.end = False
-        self.rarity =None
-        self.name = None
-        self.deck = None
-        self.deck_info = None
-    def insert(self,s,rarity,deck,deck_info):
-        d = self
-        s = s.lower()
-        for char in s:
-            d = d.dic
-            if char not in d.keys():
-               d[char] = trie()
-            d = d[char]
-        d.end = True
-        d.rarity = rarity
-        d.deck = deck if not d.deck else d.deck
-        d.name = s
-        d.deck_info = deck_info if not d.deck_info else d.deck_info
 
-    def search(self,s):
-        if not s:
-            return None,None,None,None
-        s = s.lower()
-        d = self
-        i = 0
-        while not d.end or i<len(s):
-            d = d.dic
+from card_info import *
 
-            if i<len(s):
-                if s[i] not in d.keys():
-                    return None,None,None,None
-                else:
-                    d = d[s[i]]
-                    i+=1
-            else:
-                if d:
-                    for key in d.keys():
-                        d = d[key]
-                        break
-                else:
-                    return None,None,None,None
-        return d.name,d.rarity,d.deck,d.deck_info
-
-
-# id_to_all = json.load(open("data.json", "r"))
-# t = trie()
-# for key in id_to_all.keys():
-#     for language in ["en-US","ja-JP","zh-CN","zh-TW","ko-KR"]:
-#         if language+"_name" in id_to_all[key].keys():
-#             t.insert(id_to_all[key][language+"_name"],id_to_all[key]["rarity"],id_to_all[key]["deck_used"],id_to_all[key]["deck_types_info"])
-#
-# name,rarity,deck,deck_info = t.search("幻")
-# print(name,rarity,deck,deck_info)
 
 class ScrollLabel(QScrollArea):
 
@@ -95,7 +42,6 @@ class ScrollLabel(QScrollArea):
         self.label.setText(text)
 
 
-
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
@@ -109,11 +55,20 @@ class MainWindow(QMainWindow):
                     self.eng_to_cn_dic[line[0]] = line[0]+"("+line[-1]+")"
                 else:
                     self.eng_to_cn_dic[line[0]] = line[0]
-        self.trie = trie()
+
+        self._create_database()
+
         for key in id_to_all.keys():
-            for language in ["en-US","ja-JP","zh-CN","zh-TW","ko-KR"]:
+            deck_info = CardInfo(id_to_all[key]["rarity"], id_to_all[key]
+                                 ["deck_used"], id_to_all[key]["deck_types_info"])
+            if not deck_info.valid():
+                continue
+
+            for language in ["en-US", "ja-JP", "zh-CN", "zh-TW", "ko-KR"]:
                 if language+"_name" in id_to_all[key].keys():
-                    self.trie.insert(id_to_all[key][language+"_name"],id_to_all[key]["rarity"],id_to_all[key]["deck_used"],id_to_all[key]["deck_types_info"])
+                    db = self._rarity2database(deck_info.rarity)
+                    db.insert(id_to_all[key][language+"_name"], deck_info)
+
         self.setWindowTitle("dismantle Assistant")
         self.label = ScrollLabel()
         self.input = QLineEdit()
@@ -129,56 +84,84 @@ class MainWindow(QMainWindow):
         # Set the central widget of the Window.
         self.setCentralWidget(container)
 
-    def text_changed(self):
-        name,rarity,decks,deck_info = self.trie.search(self.input.text())
-        if name is None:
-            return
-        if rarity is None:
-            rarity = "无"
-        #"3×": [], "2×": [], "1×": [], "0×:[]"
-        prefix = {"卡名: "+name:{},
-                  "稀有度: "+rarity:{}}
-        if not decks:
-            prefix["携带此卡的卡组: 无"] = {}
-        else:
-            for deck in decks:
-                if deck_info and deck in deck_info.keys():
-                    #prefix[deck] = {"3×": deck_info[deck][0], "2×": deck_info[deck][1], "1×": deck_info[deck][2], "0×":deck_info[deck][3],"平均携带":deck_info[deck][4]}
-                    try:
-                        prefix[self.eng_to_cn_dic[deck.strip()]] = deck_info[deck]
-                    except:
-                        print(deck)
-                        continue
-                else:
-                    prefix[self.eng_to_cn_dic[deck]] = ['?']*5
-                    #prefix[deck] = {"3×": "?", "2×": "?", "1×": "?","0×": "?", "平均携带": "?"}
-        # import pandas as pd
-        # df = pd.DataFrame(data=prefix)
-        # df = df.fillna(' ').T
-        # print(df.to_html())
-        # print(self.to_html(prefix))
-        self.label.setText(self.to_html(prefix))
+    def _create_database(self):
+        self.databaseUR = CardInfoDB()
+        self.databaseSR = CardInfoDB()
+        self.databaseN = CardInfoDB()
+        self.databaseR = CardInfoDB()
+        self.databaseList = [
+            self.databaseUR,
+            self.databaseSR,
+            self.databaseR,
+            self.databaseN,
+        ]
 
-    def to_html(self,dic):
+        self.database = CardInfoDBGroup(self.databaseList)
+
+        self.rarity_id = {
+            'UR': 0,
+            'SR': 1,
+            'R': 2,
+            'N': 3,
+        }
+
+    def _rarity2database(self, rarity: str):
+        return self.databaseList[self.rarity_id[rarity]]
+
+    def text_changed(self):
+        html = ''
+        results = self.database.search(
+            self.input.text(), [True, True, False, False])
+        for name, card_info in results:
+            if name is None:
+                return
+            if card_info.rarity is None:
+                rarity = "无"
+            prefix = self._card_info_to_prefix(name, card_info)
+            html += self.to_html(prefix)
+        self.label.setText(html)
+
+    def _card_info_to_prefix(self, name: str, card_info: CardInfo):
+        prefix = {"卡名: " + name: {},
+                  "稀有度: " + card_info.rarity: {}}
+
+        if card_info.deck_info is None:
+            prefix["携带此卡的卡组: 无"] = None
+
+        else:
+            for deck in card_info.deck_used:
+                deck_name = deck.strip()
+                if deck_name in self.eng_to_cn_dic:
+                    deck_name = self.eng_to_cn_dic[deck_name]
+
+                if deck in card_info.deck_info:
+                    #prefix[deck] = {"3×": deck_info[deck][0], "2×": deck_info[deck][1], "1×": deck_info[deck][2], "0×":deck_info[deck][3],"平均携带":deck_info[deck][4]}
+                    prefix[deck_name] = card_info.deck_info[deck]
+                else:
+                    prefix[deck_name] = ['?']*5
+        return prefix
+
+    def to_html(self, dic):
         html = "<thead><tr style='text-align: center;'><th></th><th>3×</th><th>2×</th><th>1×</th><th>0×</th><th>平均携带</th></tr></thead>"
-        html+="<tbody>"
+        html += "<tbody>"
         for key in dic.keys():
-            html+="<tr>"
-            html+="<th>"+key+"</th>"
+            html += "<tr>"
+            html += "<th>"+key+"</th>"
             if dic[key]:
                 for str in dic[key]:
-                    html+="<td>"+str+"</td>"
+                    html += "<td>"+str+"</td>"
             else:
                 for _ in range(5):
                     html += "<td>" + "</td>"
-        html +="</tbody>"
-        return "<table border='1'>" + html+"</table>"
+        html += "</tbody>"
+        return "<table border='1'>" + html+"</table>\n"
+
 
 app = QApplication(sys.argv)
 QApplication.setFont(QFont('微软雅黑', 10), "QTextEdit")
 
 window = MainWindow()
-window.resize(400,600)
+window.resize(400, 600)
 window.show()
 
 app.exec()
