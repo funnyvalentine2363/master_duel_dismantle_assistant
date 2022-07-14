@@ -101,7 +101,7 @@ class MainWindow(QMainWindow):
         super().__init__()
         id_to_all = json.load(open("data.json", "r"))
         self.eng_to_cn_dic = {}
-        with open('deck_type.txt', 'r') as r:
+        with open('deck_type.txt', 'r', encoding='gbk') as r:
             for line in r.readlines():
                 line = line.strip().split(":")
 
